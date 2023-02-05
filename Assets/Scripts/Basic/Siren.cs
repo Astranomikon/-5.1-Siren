@@ -9,15 +9,22 @@ public class Siren : MonoBehaviour
     private float _sirenDeltaVolume = 0.005f;
     private float _maxVolume = 1;
     private float _minVolume = 0;
-    private Coroutine increaseVolimeCoroutine;
-    private Coroutine decreaseVolimeCoroutine;
+    private Coroutine increaseVolumeCoroutine;
+    private Coroutine decreaseVolumeCoroutine;
+
+    private void Start()
+    {
+        _audioSource.Play();
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.TryGetComponent<Theif>(out Theif theif))
         {
-            increaseVolimeCoroutine = StartCoroutine(IncreaseVolume());
-            StopCoroutine(decreaseVolimeCoroutine);
+            if (decreaseVolumeCoroutine != null)
+                StopCoroutine(decreaseVolumeCoroutine);
+
+            increaseVolumeCoroutine = StartCoroutine(ChangeVolume(_maxVolume));
         }
     }
 
@@ -25,33 +32,17 @@ public class Siren : MonoBehaviour
     {
         if (collision.TryGetComponent<Theif>(out Theif theif))
         {
-            decreaseVolimeCoroutine = StartCoroutine(DecreaseVolume());
-            StopCoroutine(increaseVolimeCoroutine);
+            StopCoroutine(increaseVolumeCoroutine);
+            decreaseVolumeCoroutine = StartCoroutine(ChangeVolume(_minVolume));
         }
     }
 
-    private IEnumerator IncreaseVolume()
+    private IEnumerator ChangeVolume(float desiredVolume)
     {
-        _audioSource.Play();
-
-        for (float i = _audioSource.volume; i <= _maxVolume; i+= _sirenDeltaVolume)
+        while (_audioSource.volume != desiredVolume)
         {
-            _audioSource.volume = i;
+            _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, desiredVolume, _sirenDeltaVolume);
             yield return null;
         }
-
-        StopCoroutine(increaseVolimeCoroutine);
-    }
-
-    private IEnumerator DecreaseVolume()
-    {
-        for (float i = _audioSource.volume; i >= _minVolume; i -= _sirenDeltaVolume)
-        {
-            _audioSource.volume = i;
-            yield return null;
-        }
-
-        StopCoroutine(decreaseVolimeCoroutine);
-        _audioSource.Stop();
     }
 }
