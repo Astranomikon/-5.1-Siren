@@ -6,11 +6,10 @@ public class Siren : MonoBehaviour
 {
     [SerializeField] private AudioSource _audioSource;
 
-    private float _sirenDeltaVolume = 0.005f;
+    private float _sirenDeltaVolume = 0.01f;
     private float _maxVolume = 1;
     private float _minVolume = 0;
-    private Coroutine increaseVolumeCoroutine;
-    private Coroutine decreaseVolumeCoroutine;
+    private Coroutine changeVolumeCoroutine;
 
     private void Start()
     {
@@ -21,10 +20,7 @@ public class Siren : MonoBehaviour
     {
         if (collision.TryGetComponent<Theif>(out Theif theif))
         {
-            if (decreaseVolumeCoroutine != null)
-                StopCoroutine(decreaseVolumeCoroutine);
-
-            increaseVolumeCoroutine = StartCoroutine(ChangeVolume(_maxVolume));
+            changeVolumeCoroutine = StartCoroutine(ChangeVolume(_maxVolume));
         }
     }
 
@@ -32,8 +28,7 @@ public class Siren : MonoBehaviour
     {
         if (collision.TryGetComponent<Theif>(out Theif theif))
         {
-            StopCoroutine(increaseVolumeCoroutine);
-            decreaseVolumeCoroutine = StartCoroutine(ChangeVolume(_minVolume));
+            changeVolumeCoroutine = StartCoroutine(ChangeVolume(_minVolume));
         }
     }
 
