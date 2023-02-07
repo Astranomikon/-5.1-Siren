@@ -13,7 +13,7 @@ public class DetectorTheifs : MonoBehaviour
     {
         if (collision.TryGetComponent<Theif>(out Theif theif))
         {
-            StartCoroutine(siren.ChangeVolume(_maxVolumeSiren));
+            siren.ChangeVolume(_maxVolumeSiren);
         }
     }
 
@@ -21,7 +21,7 @@ public class DetectorTheifs : MonoBehaviour
     {
         if (collision.TryGetComponent<Theif>(out Theif theif))
         {
-            StartCoroutine(siren.ChangeVolume(_minVolumeSiren));
+            siren.ChangeVolume(_minVolumeSiren);
         }
     }
 }
